@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeFeaturedView: View {
     
     @EnvironmentObject var model:RecipeModel
+    @State var isDetailViewShowing = false
     
     
     
@@ -27,17 +28,28 @@ struct RecipeFeaturedView: View {
                 //loop through each recipe. Only show featured
                 ForEach (0..<model.recipes.count){ index in
                     if model.recipes[index].featured == true {
-                        ZStack{
-                            Rectangle().foregroundColor(.white)
-                            
-                            VStack(spacing: 0){
-                                Image(model.recipes[index].image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .clipped()
-                                Text(model.recipes[index].name).padding(5)
+                        Button(action: {
+                            //show the recipe detail sheet
+                            self.isDetailViewShowing = true
+                        }, label:{
+                            ZStack{
+                                Rectangle().foregroundColor(.white)
+                                
+                                VStack(spacing: 0){
+                                    Image(model.recipes[index].image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .clipped()
+                                    Text(model.recipes[index].name).padding(5)
+                                }
                             }
-                        }.frame(width: geo.size.width-40, height: geo.size.height-100, alignment: .center)
+                        })
+                            .sheet(isPresented: $isDetailViewShowing){
+                                //show the recipe detail view
+                                RecipeDetailView(recipe: model.recipes[index])
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        .frame(width: geo.size.width-40, height: geo.size.height-100, alignment: .center)
                             .cornerRadius(15)
                             .shadow(color:Color(.init(srgbRed: 0, green: 0, blue: 0, alpha: 0.5)), radius: 10,x:-5,y:5)
                     }
